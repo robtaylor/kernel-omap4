@@ -87,7 +87,7 @@ struct dispc_features {
 	u16 sw_max;
 	u16 vp_max;
 	u16 hp_max;
-	int (*calc_scaling) (enum omap_plane plane,
+	int (*calc_scaling) (unsigned long pclk, unsigned long lclk,
 		const struct omap_video_timings *mgr_timings,
 		u16 width, u16 height, u16 out_width, u16 out_height,
 		enum omap_color_mode color_mode, bool *five_taps,
@@ -2129,7 +2129,7 @@ static unsigned long calc_core_clk_44xx(unsigned long pclk, u16 width,
 		return pclk;
 }
 
-static int dispc_ovl_calc_scaling_24xx(enum omap_plane plane,
+static int dispc_ovl_calc_scaling_24xx(unsigned long pclk, unsigned long lclk,
 		const struct omap_video_timings *mgr_timings,
 		u16 width, u16 height, u16 out_width, u16 out_height,
 		enum omap_color_mode color_mode, bool *five_taps,
@@ -2141,7 +2141,6 @@ static int dispc_ovl_calc_scaling_24xx(enum omap_plane plane,
 	int min_factor = min(*decim_x, *decim_y);
 	const int maxsinglelinewidth =
 			dss_feat_get_param_max(FEAT_PARAM_LINEWIDTH);
-	unsigned long pclk = dispc_plane_pclk_rate(plane);
 
 	*five_taps = false;
 
@@ -2171,7 +2170,7 @@ static int dispc_ovl_calc_scaling_24xx(enum omap_plane plane,
 	return 0;
 }
 
-static int dispc_ovl_calc_scaling_34xx(enum omap_plane plane,
+static int dispc_ovl_calc_scaling_34xx(unsigned long pclk, unsigned long lclk,
 		const struct omap_video_timings *mgr_timings,
 		u16 width, u16 height, u16 out_width, u16 out_height,
 		enum omap_color_mode color_mode, bool *five_taps,
@@ -2183,8 +2182,6 @@ static int dispc_ovl_calc_scaling_34xx(enum omap_plane plane,
 	int min_factor = min(*decim_x, *decim_y);
 	const int maxsinglelinewidth =
 			dss_feat_get_param_max(FEAT_PARAM_LINEWIDTH);
-	unsigned long pclk = dispc_plane_pclk_rate(plane);
-	unsigned long lclk = dispc_plane_lclk_rate(plane);
 
 	do {
 		in_height = DIV_ROUND_UP(height, *decim_y);
@@ -2239,7 +2236,7 @@ static int dispc_ovl_calc_scaling_34xx(enum omap_plane plane,
 	return 0;
 }
 
-static int dispc_ovl_calc_scaling_44xx(enum omap_plane plane,
+static int dispc_ovl_calc_scaling_44xx(unsigned long pclk, unsigned long lclk,
 		const struct omap_video_timings *mgr_timings,
 		u16 width, u16 height, u16 out_width, u16 out_height,
 		enum omap_color_mode color_mode, bool *five_taps,
@@ -2252,7 +2249,6 @@ static int dispc_ovl_calc_scaling_44xx(enum omap_plane plane,
 	const int maxsinglelinewidth =
 				dss_feat_get_param_max(FEAT_PARAM_LINEWIDTH);
 	const int maxdownscale = dss_feat_get_param_max(FEAT_PARAM_DOWNSCALE);
-	unsigned long pclk = dispc_plane_pclk_rate(plane);
 
 	if (mem_to_mem) {
 		in_width_max = out_width * maxdownscale;
@@ -2294,6 +2290,8 @@ static int dispc_ovl_calc_scaling(enum omap_plane plane,
 	const int max_decim_limit = 16;
 	unsigned long core_clk = 0;
 	int decim_x, decim_y, ret;
+	unsigned long pclk = dispc_plane_pclk_rate(plane);
+	unsigned long lclk = dispc_plane_lclk_rate(plane);
 
 	if (width == out_width && height == out_height)
 		return 0;
@@ -2329,7 +2327,7 @@ static int dispc_ovl_calc_scaling(enum omap_plane plane,
 	if (decim_y > *y_predecim || out_height > height * 8)
 		return -EINVAL;
 
-	ret = dispc.feat->calc_scaling(plane, mgr_timings, width, height,
+	ret = dispc.feat->calc_scaling(pclk, lclk, mgr_timings, width, height,
 		out_width, out_height, color_mode, five_taps,
 		x_predecim, y_predecim, &decim_x, &decim_y, pos_x, &core_clk,
 		mem_to_mem);
