@@ -968,15 +968,20 @@ static inline void omap_hsmmc_reset_controller_fsm(struct omap_hsmmc_host *host,
 			__func__);
 }
 
-static void hsmmc_command_incomplete(struct omap_hsmmc_host *host, int err)
+static void hsmmc_command_incomplete(struct omap_hsmmc_host *host,
+					int err, int end_cmd)
 {
-	omap_hsmmc_reset_controller_fsm(host, SRC);
-	host->cmd->error = err;
+	if (end_cmd) {
+		omap_hsmmc_reset_controller_fsm(host, SRC);
+		if (host->cmd)
+			host->cmd->error = err;
+	}
 
 	if (host->data) {
 		omap_hsmmc_reset_controller_fsm(host, SRD);
 		omap_hsmmc_dma_cleanup(host, err);
-	}
+	} else if (host->mrq && host->mrq->cmd)
+		host->mrq->cmd->error = err;
 
 }
 
@@ -990,14 +995,16 @@ static void omap_hsmmc_do_irq(struct omap_hsmmc_host *host, int status)
 
 	if (status & ERR) {
 		omap_hsmmc_dbg_report_irq(host, status);
-		if (status & (CMD_TIMEOUT | DATA_TIMEOUT))
-			hsmmc_command_incomplete(host, -ETIMEDOUT);
-		else if (status & (CMD_CRC | DATA_CRC))
-			hsmmc_command_incomplete(host, -EILSEQ);
 
-		end_cmd = 1;
+		if (status & (CMD_TIMEOUT | CMD_CRC))
+			end_cmd = 1;
+		if (status & (CMD_TIMEOUT | DATA_TIMEOUT))
+			hsmmc_command_incomplete(host, -ETIMEDOUT, end_cmd);
+		else if (status & (CMD_CRC | DATA_CRC))
+			hsmmc_command_incomplete(host, -EILSEQ, end_cmd);
+
 		if (host->data || host->response_busy) {
-			end_trans = 1;
+			end_trans = !end_cmd;
 			host->response_busy = 0;
 		}
 	}
