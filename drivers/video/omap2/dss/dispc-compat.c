@@ -24,6 +24,7 @@
 #include <linux/jiffies.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
+#include <linux/seq_file.h>
 
 #include <video/omapdss.h>
 
