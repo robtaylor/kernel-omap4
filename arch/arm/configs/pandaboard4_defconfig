@@ -2271,6 +2271,11 @@ CONFIG_DRM_OMAP=y
 CONFIG_DRM_OMAP_NUM_CRTCS=2
 
 #
+# PowerVR SGX
+#
+CONFIG_DRM_OMAP_PVR=m
+
+#
 # Android
 #
 # CONFIG_ANDROID is not set
