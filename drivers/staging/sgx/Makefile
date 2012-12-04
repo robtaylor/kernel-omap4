@@ -23,8 +23,8 @@ sgx-env-objs := event.o mmap.o module.o mutils.o osperproc.o proc.o \
 
 pvr-sgx-y := $(sgx-bridged-objs) $(sgx-common-objs) $(sgx-devices-objs) $(sgx-env-objs)
 
-subdir-ccflags-y=-D__linux__ -I$(src)/include/ -include $(srctree)/$(src)/include/config_kernel.h
-ccflags-y=-D__linux__ -I$(src)/include/ -include $(srctree)/$(src)/include/config_kernel.h
+subdir-ccflags-y=-D__linux__ -I$(src)/include/ -include $(srctree)/$(src)/include/config_kernel.h -I$(srctree)/drivers/staging/omapdrm/
+ccflags-y=-D__linux__ -I$(src)/include/ -include $(srctree)/$(src)/include/config_kernel.h -I$(srctree)/drivers/staging/omapdrm/
 
 #pvr-sgx-objs := sysconfig.o sysutils_linux.o
 #sgx_bridged.o sgx_common.o sgx_devices.o sgx_env.o
