@@ -74,16 +74,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <linux/platform_device.h>
 #endif
 
-#if ((defined(DEBUG) || defined(TIMING)) && \
-    (LINUX_VERSION_CODE == KERNEL_VERSION(2,6,34))) && \
-    !defined(PVR_NO_OMAP_TIMER)
-/*
- * We need to explicitly enable the GPTIMER11 clocks, or we'll get an
- * abort when we try to access the timer registers.
- */
-#define	PVR_OMAP5_TIMING_PRCM
-#endif
-
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
 #include <plat/gpu.h>
 #if !defined(PVR_NO_OMAP_TIMER)
