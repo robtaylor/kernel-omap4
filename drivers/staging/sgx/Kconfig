@@ -1,0 +1,9 @@
+menu "PowerVR SGX"
+
+config PVR_SGX
+        tristate "PVR SGX Drivers"
+        default N
+        ---help---
+          Enable PVR SGX support
+
+endmenu
