@@ -2279,6 +2279,11 @@ CONFIG_DRM_OMAP_PVR=m
 # Android
 #
 # CONFIG_ANDROID is not set
+
+#
+# PowerVR SGX
+#
+CONFIG_PVR_SGX=m
 # CONFIG_PHONE is not set
 # CONFIG_USB_WPAN_HCD is not set
 # CONFIG_USB_G_CCG is not set
