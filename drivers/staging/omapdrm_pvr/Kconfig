@@ -1,0 +1,10 @@
+menu "PowerVR SGX"
+
+config DRM_OMAP_PVR
+        tristate "OMAP PVR SGX Drivers"
+	depends on DRM_OMAP && m
+        default N
+        ---help---
+          Support SGX core with OMAP DRM driver
+
+endmenu
