@@ -585,6 +585,7 @@ static void omap_crtc_pre_apply(struct omap_drm_apply *apply)
 			omap_encoder_update(encoder, &omap_crtc->mgr,
 					&omap_crtc->timings);
 			omap_encoder_set_enabled(encoder, true);
+			omap_crtc->full_update = false;
 		}
 
 		dispc_mgr_setup(omap_crtc->channel, &info);
